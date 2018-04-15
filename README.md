@@ -67,8 +67,8 @@ class Menu: public Radio {
       Radio(title, x, y, vertical, parent){}
 
     virtual int Enter() {
-	  std::string title="确定选择: ";
-	  title+=this->text();
+      std::string title="确定选择: ";
+      title+=this->text();
       MsgBox message(title.c_str(), 40-14/2, 4);
       int ret = message.execute();
       if(ret!=-1) {
