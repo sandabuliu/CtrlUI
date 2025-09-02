@@ -9,8 +9,7 @@ class Static: public Ctrl {
 
   public:
     Static(const char *text, int x, int y, Ctrl *parent=NULL);
-    virtual void setFocus(Ctrl *pOld=NULL);
-    virtual void toShow(int pFocus);
+    virtual void toShow(int focus);
 };
 
 #endif

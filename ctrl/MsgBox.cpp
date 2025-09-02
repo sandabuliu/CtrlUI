@@ -49,7 +49,7 @@ int MsgBox::execute() {
 
   system("cls");
   Application app((Ctrl*)(this));
-  app.start();
+  app.Start();
   this->setApp(oApp);
 
   system("cls");
@@ -68,12 +68,12 @@ int MsgBox::Enter() {
 
 int MsgBox::Left() {
   this->prev();
-  return 0;
+  return 1;
 }
 
 int MsgBox::Right() {
   this->next();
-  return 0;
+  return 1;
 }
 
 void MsgBox::printTitle() {

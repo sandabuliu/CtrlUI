@@ -1,5 +1,5 @@
 #include"ctrl.h"
-
+#include<time.h>
 #include<conio.h>
 
 void Event::set(int type, int value) {
@@ -11,7 +11,22 @@ Ctrl::Ctrl(Ctrl *p) {
   this->parent = p;
   this->visible = true;
   this->focus = false;
-  if(p) p->addChild(this);
+  this->accessEvent = 0;
+  this->isRelease = false;
+  
+  if(p) {
+    p->addChild(this);
+	this->setApp(p->app);
+  }
+}
+
+void Ctrl::release() {
+  this->isRelease = true;
+}
+
+void Ctrl::setPosition(int x, int y) {
+  this->pos.X = x;
+  this->pos.Y = y;
 }
 
 void Ctrl::setApp(Application *app) {
@@ -35,141 +50,140 @@ void Ctrl::hide(bool visible) {
 }
 
 void Ctrl::show(int pFocus) {
+
   if(!this->visible) {
     return;
   }
 
-  short x, y, cx, cy;
+  int focus = pFocus && this->focus;
+  short x, y;
   this->getCursor(x, y);
   this->setCursor(pos.X, pos.Y);
-  this->toShow(pFocus);
-  this->getCursor(cx, cy);
-  cur.X = cx;
-  cur.Y = cy;
+  this->toShow(focus);
   this->setCursor(x, y);
 
-  if(pFocus && this->focus) this->setCursor(cx, cy);
   std::vector<Ctrl*>::iterator iter;
   for(iter=children.begin();iter!=children.end();iter++) {
-    (*iter)->show(this->focus);
+    (*iter)->show(focus);
   }
 }
 
-void Ctrl::screen(Ctrl *ctrl) {
-  system("cls");
-  Ctrl *pParent;
-  for(pParent=this;pParent->parent;pParent=pParent->parent);
-  pParent->hide();
-
-  for(pParent=ctrl;pParent->parent;pParent=pParent->parent);
-  pParent->hide(1);
-  pParent->setFocus(this);
-  pParent->show();
-  pParent->lastScreen = pParent;
-  this->app->main = ctrl;
-}
-
-void Ctrl::revert() {
-  if (!this->lastScreen) return;
-  system("cls");
-  Ctrl *pParent;
-  for(pParent=this;pParent->parent;pParent=pParent->parent);
-  pParent->hide();
-
-  for(pParent=this->lastScreen;pParent->parent;pParent=pParent->parent);
-  pParent->hide(1);
-  pParent->setFocus(this);
-  pParent->show();
-  this->app->main = this->lastScreen;
-}
+void Ctrl::toShow(int focus) {/*printf("ctrl!\n");*/}
 
 void Ctrl::unsetFocus() {
   this->focus = false;
 }
 
-void Ctrl::setFocus(Ctrl *pOld) {
+void Ctrl::setFocus() {
   this->focus = true;
-  if(pOld) pOld->focus = false;
-
-  bool focus=true;
-  std::vector<Ctrl*>::iterator iter;
-  for(iter=children.begin();iter!=children.end();iter++) {
-    if((*iter)->focus) {
-      focus=false;
-      break;
-    }
-  }
-  if(focus && children.size()) {
-    for(iter=children.begin();iter!=children.end();iter++) {
-      (*iter)->setFocus();
-      if((*iter)->focus) break;
-    }
-  }
 }
 
 void Ctrl::addChild(Ctrl *p) {
   this->children.push_back(p);
+  bool hasFocus=false;
+  for(int i=0; i<this->children.size(); i++) {
+	if(this->children[i]->getFocus()) {
+	  hasFocus=true;
+	  break;
+	}
+  }
+  if(!hasFocus) {
+	this->children[0]->setFocus();
+  }
+}
+
+void Ctrl::subscribe(int accessEvents) {
+  this->accessEvent = accessEvents;
+}
+
+bool Ctrl::isSub(int accessEvent) {
+  int ret = accessEvent & this->accessEvent;
+  return ret != 0;
 }
 
 int Ctrl::onEvent(Event &e) {
-  int ret=1;
-  std::vector<Ctrl*>::iterator iter;
-  for(iter=children.begin();iter!=children.end();iter++) {
-    if((*iter)->focus) {
-      ret=(*iter)->onEvent(e);
-      break;
-    }
+  if(!this->focus) {
+	return 0;
   }
 
-  if (ret == 0) {
-    return 0;
-  } else if(ret < 0) {
-    return ret;
+  int retChild=0, retParent=0, idx=0;
+  std::vector<Ctrl*>::iterator iter;
+  std::vector<int> indexes;
+  for(iter=children.begin();iter!=children.end();iter++) {
+	int ret = (*iter)->onEvent(e);
+	if(ret < 0) {
+      return ret;
+	}
+	retChild = retChild | ret;
+
+	if((*iter)->isRelease) {
+	  indexes.push_back(idx);
+	  (*iter)->toRelease();
+	}
+	idx++;
   }
-  if (e.type==1) {
+
+  for(int i=0; i < indexes.size(); i++) {
+	children.erase(children.begin()+indexes[i], children.end());
+  }
+
+  if(!this->isSub(e.type)) {
+    return retChild;
+  }
+  if (e.type==EVENT_TYPE_KEY) {
     if(e.value==27) {
-      return this->Esc();
+      retParent = this->Esc();
     } else if (e.value==13) {
-      return this->Enter();
+      retParent = this->Enter();
     } else if (e.value==9) {
-      return this->Tab();
+      retParent = this->Tab();
     } else if (e.value==8) {
-      return this->BackSpace();
+      retParent = this->BackSpace();
     } else if (e.value==72) {
-      return this->Up();
+      retParent = this->Up();
     } else if (e.value==80) {
-      return this->Down();
+      retParent = this->Down();
     } else if (e.value==75) {
-      return this->Left();
+      retParent = this->Left();
     } else if (e.value==77) {
-      return this->Right();
+      retParent = this->Right();
     }
   }
-  else {
-    return this->CharEvent((char)(e.value));
+  else if(e.type==EVENT_TYPE_CHAR) {
+    retParent = this->CharEvent((char)(e.value));
   }
-  return 1;
+  else if(e.type==EVENT_TYPE_TIME) {
+	retParent = this->TimeEvent(e.value);  
+  }
+
+  if(retParent < 0) {
+    return retParent;
+  }
+  return retParent | retChild;
 }
 
-int Ctrl::CharEvent(char key) {return 1;}
+int Ctrl::TimeEvent(int timestamp) {return 0;}
 
-int Ctrl::Enter() {return 1;}
+int Ctrl::CharEvent(char key) {return 0;}
 
-int Ctrl::Esc() {return 1;}
+int Ctrl::Enter() {return 0;}
 
-int Ctrl::BackSpace() {return 1;}
+int Ctrl::Esc() {return 0;}
 
-int Ctrl::Tab() {return 1;}
+int Ctrl::BackSpace() {return 0;}
 
-int Ctrl::Up() {return 1;}
+int Ctrl::Tab() {return 0;}
 
-int Ctrl::Down() {return 1;}
+int Ctrl::Up() {return 0;}
 
-int Ctrl::Left() {return 1;}
+int Ctrl::Down() {return 0;}
 
-int Ctrl::Right() {return 1;}
+int Ctrl::Left() {return 0;}
 
-void Ctrl::toShow(int pFocus) {}
+int Ctrl::Right() {return 0;}
+
+void Ctrl::toRelease() {}
+
 
 void Select::getNextCursor(int index, short &x, short &y) {
   this->getCursor(x, y);
@@ -186,13 +200,14 @@ Select::Select(const char *title, int x, int y, const char *items[], int size, C
   this->pos.Y = y;
   this->select = 0;
   for(int i=0;i<size;i++) this->items.push_back(items[i]);
+  this->subscribe(EVENT_TYPE_KEY | EVENT_TYPE_CHAR);
 }
 
 const char* Select::text() {
   return this->items[this->select];
 }
 
-void Select::toShow(int pFocus) {
+void Select::toShow(int focus) {
   short x, y;
   this->printTitle();
   for(int i=0;i<this->items.size();i++) {
@@ -213,7 +228,6 @@ void Select::prev() {
   if(this->select < 0) {
     this->select=this->items.size()-1;
   }
-  this->show();
 }
 
 void Select::next() {
@@ -221,38 +235,60 @@ void Select::next() {
   if(this->select >= this->items.size()) {
     this->select=0;
   }
-  this->show();
 }
 
-Application::Application(Ctrl *main) {
+Application::Application(Ctrl *main, int timeDlt) {
   this->main = main;
   this->main->setFocus();
   this->main->setApp(this);
+  this->timeDlt = timeDlt;
 }
 
-void Application::start() {
+void Application::ShowCursor(int nShow) {
+  CONSOLE_CURSOR_INFO ConsoleCursorInfo;
+  GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&ConsoleCursorInfo);
+  ConsoleCursorInfo.bVisible=nShow;
+  SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE),&ConsoleCursorInfo);
+}
+
+void Application::Start() {
   this->main->show();
 
+  int ts = clock();
   while(1) {
-    Event event;
-    char key = getch();
-    if(key < 0)
-    {
-      char k = getch();
-      if(k==72 || k==80 || k==75 || k==77) event.set(1, k);
-      else if(k<0) {
-        event.set(0, key);
-        this->main->onEvent(event);
-        event.set(0, k);
-      }
+	int ret1=0, ret2=0;
+	if(kbhit()) {
+      Event event;
+      char key = getch();
+      if(key < 0) {
+        char k = getch();
+        if(k==72 || k==80 || k==75 || k==77) event.set(EVENT_TYPE_KEY, k);
+        else if(k<0) {
+          event.set(EVENT_TYPE_CHAR, key);
+          this->main->onEvent(event);
+          event.set(EVENT_TYPE_CHAR, k);
+		}
+	  } else if(key==27 || key==13 || key==9 || key==8) {
+        event.set(EVENT_TYPE_KEY, key);
+	  } else {
+        event.set(EVENT_TYPE_CHAR, key);
+	  }
+	  ret1 = this->main->onEvent(event);
+      if(ret1<0) break;
+	}
+
+	int now = clock();
+	if(now-ts >= this->timeDlt) {
+	  Event event;
+	  event.set(EVENT_TYPE_TIME, now);
+      ret2 = this->main->onEvent(event);
+	  if(ret2<0) break;
+	  ts = clock();
     }
-    else if(key==27 || key==13 || key==9 || key==8) {
-      event.set(1, key);
-    }
-    else {
-      event.set(0, key);
-    }
-    if(this->main->onEvent(event)<0) break;
+
+	if(ret1 || ret2) {
+      this->main->show();
+	}
   }
 }
 

@@ -1,32 +1,44 @@
 #include "Layout.h"
+#include<time.h>
 
 
 Layout::Layout(Ctrl *p): Ctrl(p) {
   this->index=0;
+  this->subscribe(EVENT_TYPE_KEY);
 }
 
 void Layout::next() {
-  if(!this->children.size()) return;
-
-  int old = this->index;
-  this->index--;
-  if(this->index<0){
-    this->index = this->children.size()-1;
+  if(!this->children.size()) {
+	return;
   }
-  this->children[this->index]->setFocus(this->children[old]);
-  this->show();
+
+  int size = this->children.size();
+  int nextIdx = (this->index+size-1) % size;
+  for(int i=0; i<size; i++) {
+	if(i == nextIdx) {
+	  this->children[i]->setFocus();
+	} else {
+	  this->children[i]->unsetFocus();
+	}
+  }
+  this->index = nextIdx;
 }
 
 void Layout::prev() {
-  if(!this->children.size()) return;
-
-  int old = this->index;
-  this->index++;
-  if(this->index>=this->children.size()){
-    this->index = 0;
+  if(!this->children.size()) {
+	return;
   }
-  this->children[this->index]->setFocus(this->children[old]);
-  this->show();
+
+  int size = this->children.size();
+  int prevIdx = (this->index+1) % size;
+  for(int i=0; i<size; i++) {
+	if(i == prevIdx) {
+	  this->children[i]->setFocus();
+	} else {
+	  this->children[i]->unsetFocus();
+	}
+  }
+  this->index = prevIdx;
 }
 
 HLayout::HLayout(Ctrl *p): Layout(p) {}

@@ -11,33 +11,44 @@ class Event{
     void set(int type, int value);
 };
 
+#define EVENT_TYPE_CHAR 0x1
+#define EVENT_TYPE_KEY  0x2
+#define EVENT_TYPE_TIME 0x4
+
 class Application;
 
 class Ctrl {
   protected:
-    COORD pos;
-    COORD cur;
     Ctrl *parent;
     std::vector<Ctrl*> children;
     bool visible;
     bool focus;
+	bool isRelease;
+	int accessEvent;
     Ctrl *lastScreen;
     static Application *app;
 
   public:
     Ctrl(Ctrl *p=NULL);
+	COORD pos;
+    std::vector<Ctrl*> getChildren() {return children;}
+	bool getFocus() {return focus;}
+	Ctrl *GetParent() {return parent;}
     void setApp(Application *app);
-    void screen(Ctrl *ctrl);
-    void revert();
+	void setPosition(int x, int y);
     void getCursor(short &x, short &y);
     void setCursor(short x, short y);
     void hide(bool visible=0);
-    virtual void show(int pFocus=1);
-    virtual void unsetFocus();
-    virtual void setFocus(Ctrl *pOld=NULL);
+	void unsetFocus();
+    void setFocus();
+	void subscribe(int accessEvents);
+	bool isSub(int accessEvent);
+	void release();
+	virtual void toRelease();
     virtual void addChild(Ctrl *p);
     virtual int onEvent(Event &e);
     virtual int CharEvent(char key);
+	virtual int TimeEvent(int timestamp);
     virtual int Enter();
     virtual int Esc();
     virtual int BackSpace();
@@ -46,7 +57,9 @@ class Ctrl {
     virtual int Down();
     virtual int Left();
     virtual int Right();
-    virtual void toShow(int pFocus);
+	virtual void show(int pFocus=1);
+    virtual void toShow(int focus);
+	~Ctrl() {}
 };
 
 class Select: public Ctrl {
@@ -62,7 +75,7 @@ class Select: public Ctrl {
 
     Select(const char *title, int x, int y, const char *items[], int size, Ctrl *parent=NULL);
     const char* text();
-    virtual void toShow(int pFocus);
+    void toShow(int focus);
     void prev();
     void next();
 };
@@ -70,8 +83,10 @@ class Select: public Ctrl {
 class Application {
   public:
     Ctrl *main;
+	int timeDlt;
 
-    Application(Ctrl *main);
-    void start();
+    Application(Ctrl *main, int timeDlt=100);
+    void Start();
+	void ShowCursor(int nShow);
 };
 #endif

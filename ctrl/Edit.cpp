@@ -1,4 +1,5 @@
 #include "Edit.h"
+#include<time.h>
 
 
 Edit::Edit(const char *title, int x, int y, int max, Ctrl *parent): Ctrl(parent) {
@@ -6,10 +7,35 @@ Edit::Edit(const char *title, int x, int y, int max, Ctrl *parent): Ctrl(parent)
   this->pos.X = x;
   this->pos.Y = y;
   this->max = max;
+  this->subscribe(EVENT_TYPE_CHAR | EVENT_TYPE_KEY);
 }
 
-void Edit::toShow(int pFocus) {
-  if(!(pFocus && this->focus)) {
+void Edit::show(int pFocus) {
+  if(!this->visible) {
+    return;
+  }
+
+  int focus = pFocus && this->focus;
+  short x, y, cx, cy;
+  this->getCursor(x, y);
+  this->setCursor(pos.X, pos.Y);
+  this->toShow(focus);
+  this->getCursor(cx, cy);
+  cur.X = cx;
+  cur.Y = cy;
+  this->setCursor(x, y);
+
+  if(this->focus) {
+    this->setCursor(cx, cy);
+  }
+  std::vector<Ctrl*>::iterator iter;
+  for(iter=children.begin();iter!=children.end();iter++) {
+    (*iter)->show(focus);
+  }
+}
+
+void Edit::toShow(int focus) {
+  if(!focus) {
     printf("%s:%s", title.c_str(), text.c_str());
   } else {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0080);
@@ -22,7 +48,7 @@ void Edit::toShow(int pFocus) {
 int Edit::CharEvent(char key) {
   static char last_key = 0;
   if(this->max>0 && this->text.length()>=this->max) {
-    return 1;;
+    return 1;
   }
 
   if(key<0 && !last_key) {
