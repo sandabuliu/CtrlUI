@@ -13,6 +13,7 @@ class Cube: public Ctrl {
 
   public:
     Cube(int length, Ctrl *parent=NULL);
+	void init();
 	void toShow(int focus);
     void setShape(const int data[][MAX_SIZE]);
 	bool canMove(int xDlt, int yDlt);
@@ -35,7 +36,6 @@ class BackGround: public Ctrl {
 	void toShow(int focus);
 	bool inRange(int x, int y);
 	bool addPix(int x, int y);
-	int TimeEvent(int timestamp);
 	int erase();
 };
 

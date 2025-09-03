@@ -43,7 +43,10 @@ int main()
     int x=40-14/2, y=4;
     BackGround bg(20, 20);
     bg.setPosition(x, y);
-    bg.subscribe(EVENT_TYPE_TIME);
+
+    Cube cb(MAX_SIZE, (Ctrl*)(&bg));
+    cb.init();
+	cb.subscribe(EVENT_TYPE_TIME | EVENT_TYPE_KEY);
 
     Application app((Ctrl*)(&bg), 200);
     app.ShowCursor(0);
@@ -54,7 +57,6 @@ int main()
     putchar(0);
     return 0;
 }
-
 ```
 
 ##### 对话框

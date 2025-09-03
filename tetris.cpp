@@ -112,24 +112,6 @@ void BackGround::toShow(int focus) {
   }
 }
 
-int BackGround::TimeEvent(int timestamp) {
-  if(this->children.size() == 0) {
-	if(this->cb) {
-	  delete this->cb;
-	}
-
-	int size = sizeof(shapes)/sizeof(SHAPE);
-	int index = rand() % size;
-	SHAPE shape = shapes[index];
-
-    this->cb = new Cube(shape.length, (Ctrl*)this);
-    cb->setPosition(this->pos.X+5, this->pos.Y-shape.length);
-    cb->setShape(shape.shape);
-    cb->subscribe(EVENT_TYPE_TIME | EVENT_TYPE_KEY);
-  }
-  return 0;
-}
-
 Cube::Cube(int length, Ctrl *parent): Ctrl(parent) {
   if(length > MAX_SIZE) {
     throw exception("length must be less than 4");
@@ -151,8 +133,8 @@ void Cube::toShow(int focus) {
 }
 
 void Cube::setShape(const int data[][MAX_SIZE]) {
-  for(int i=0;i<this->length;i++) {
-    for(int j=0;j<this->length;j++) {
+  for(int i=0;i<MAX_SIZE;i++) {
+    for(int j=0;j<MAX_SIZE;j++) {
 	  this->data[i][j] = data[i][j];
 	}
   }
@@ -195,6 +177,17 @@ int Cube::Up() {
   return 1;
 }
 
+void Cube::init() {
+  BackGround *bg = (BackGround*)this->parent;
+  int size = sizeof(shapes)/sizeof(SHAPE);
+  int index = rand() % size;
+  SHAPE shape = shapes[index];
+
+  this->setPosition(bg->pos.X+5, bg->pos.Y-shape.length);
+  this->setShape(shape.shape);
+  this->length = shape.length;
+}
+
 int Cube::Down() {
   if(!this->canMove(0, 0)) {
     this->pos.Y++;
@@ -214,8 +207,7 @@ int Cube::Down() {
 	  }
 	}
   }
-  this->hide();
-  this->release();
+  this->init();
   if(bg->erase() < 0) {
 	return -1;
   }
