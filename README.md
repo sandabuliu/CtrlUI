@@ -7,6 +7,56 @@
 ### Examples
 ---------------
 
+##### 贪吃蛇
+
+```c++
+#include"snake.h"
+
+int main()
+{
+    int x=10, y=5;
+    Wall bg(20, 60);
+    bg.setPosition(x, y);
+
+    Snake snake(11, 8, 3, (Ctrl*)(&bg));
+    snake.subscribe(EVENT_TYPE_TIME | EVENT_TYPE_KEY);
+
+    Application app((Ctrl*)(&bg), 200);
+    app.ShowCursor(0);
+    app.Start();
+
+    printf("Game Over!\n");
+    Sleep(1000);
+    putchar(0);
+    return 0;
+}
+
+```
+
+##### 俄罗斯方块
+
+```c++
+#include"tetris.h"
+
+int main()
+{
+    int x=40-14/2, y=4;
+    BackGround bg(20, 20);
+    bg.setPosition(x, y);
+    bg.subscribe(EVENT_TYPE_TIME);
+
+    Application app((Ctrl*)(&bg), 200);
+    app.ShowCursor(0);
+    app.Start();
+
+    printf("Game Over!\n");
+    Sleep(1000);
+    putchar(0);
+    return 0;
+}
+
+```
+
 ##### 对话框
 
 ```c++
@@ -16,7 +66,7 @@ int main()
 {
     MsgBox mb("对话框测试\n(左右光标移动)", 40-14/2, 4);
     Application app((Ctrl*)(&mb));
-    app.start();
+    app.Start();
     return 0;
 }
 ```
@@ -28,9 +78,9 @@ int main()
 
 int main()
 {
-    Edit e("选择", 0, 0, -1, (Ctrl*)(&vlay));
+    Edit e("选择", 0, 0, -1);
     Application app((Ctrl*)(&e));
-    app.start();
+    app.Start();
     return 0;
 }
 ```
@@ -50,7 +100,7 @@ int main()
     Edit e3("测试3", 20, 4, -1, (Ctrl*)(&hlay));
 
     Application app((Ctrl*)(&hlay));
-    app.start();
+    app.Start();
     return 0;
 }
 ```
@@ -93,7 +143,7 @@ int main()
     menu.addItem("!@#$%");
     menu.addItem("+-*/=");
     Application app((Ctrl*)(&menu));
-    app.start();
+    app.Start();
     return 0;
 }
 ```
