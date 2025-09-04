@@ -3,7 +3,7 @@
 int main()
 {
     int x=40-14/2, y=4;
-    BackGround bg(20, 20);
+    Wall bg(20, 20, true);
     bg.setPosition(x, y);
 
     Cube cb(MAX_SIZE, (Ctrl*)(&bg));

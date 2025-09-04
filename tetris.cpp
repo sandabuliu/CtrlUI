@@ -14,20 +14,7 @@ SHAPE shapes[] = {
 	{3, {{0, 1, 0}, {1, 1, 1}}},
 };
 
-BackGround::BackGround(int h, int w, Ctrl *parent): Ctrl(parent) {
-  this->height = h;
-  this->width = w;
-  this->cb = NULL;
-  for(int i=0; i<this->height; i++) {
-	for(int j=0; j<this->width; j++) {
-	  if(i==0 || j==0 || i==this->height-1 || j == this->width-1) {data[i][j] = 1;}
-      else {data[i][j] = 0;}
-	}
-  }
-  srand(time(0));
-}
-
-int BackGround::erase() {
+int Wall::erase() {
   int line;
   bool needErase=false;
 
@@ -69,7 +56,7 @@ int BackGround::erase() {
   return 1;
 }
 
-bool BackGround::addPix(int x, int y) {
+bool Wall::addPix(int x, int y) {
   int rx=x-this->pos.X;
   int ry=y-this->pos.Y;
   if(rx < 0 || ry < 0 || rx > this->width || ry > this->height) {
@@ -83,7 +70,7 @@ bool BackGround::addPix(int x, int y) {
   return true;
 }
 
-bool BackGround::inRange(int x, int y) {
+bool Wall::inRange(int x, int y) {
   int rx=x-this->pos.X;
   int ry=y-this->pos.Y;
   if(rx < 0 || rx > this->width || ry > this->height) {
@@ -100,18 +87,6 @@ bool BackGround::inRange(int x, int y) {
   return true;
 }
 
-void BackGround::toShow(int focus) {
-  for(int i=0; i<this->height; i++) {
-    for(int j=0; j<this->width; j++) {
-      char *showChar;
-      if(this->data[i][j]) {showChar = "*";}
-      else {showChar = " ";}
-      this->setCursor(this->pos.X+j, this->pos.Y+i);
-      printf(showChar);
-	}
-  }
-}
-
 Cube::Cube(int length, Ctrl *parent): Ctrl(parent) {
   if(length > MAX_SIZE) {
     throw exception("length must be less than 4");
@@ -120,7 +95,7 @@ Cube::Cube(int length, Ctrl *parent): Ctrl(parent) {
 }
 
 void Cube::toShow(int focus) {
-  BackGround *bg = (BackGround*)this->parent;
+  Wall *bg = (Wall*)this->parent;
   for(int i=0;i<this->length;i++) {
     for(int j=0;j<this->length;j++) {
       int x=this->pos.X+j, y=this->pos.Y+i;
@@ -141,7 +116,7 @@ void Cube::setShape(const int data[][MAX_SIZE]) {
 }
 
 bool Cube::canMove(int xDlt, int yDlt) {
-  BackGround *bg = (BackGround*)this->parent;
+  Wall *bg = (Wall*)this->parent;
   for(int i=0;i<this->length;i++) {
     for(int j=0;j<this->length;j++) {
       int x=this->pos.X+xDlt+j, y=this->pos.Y+yDlt+i;
@@ -156,7 +131,7 @@ bool Cube::canMove(int xDlt, int yDlt) {
 int Cube::Up() {
   int n = this->length;
   int temp[4][4];
-  BackGround *bg = (BackGround*)this->parent;
+  Wall *bg = (Wall*)this->parent;
 
   for(int i=0; i<n; i++) {
 	for(int j=0; j<n; j++) {
@@ -178,7 +153,7 @@ int Cube::Up() {
 }
 
 void Cube::init() {
-  BackGround *bg = (BackGround*)this->parent;
+  Wall *bg = (Wall*)this->parent;
   int size = sizeof(shapes)/sizeof(SHAPE);
   int index = rand() % size;
   SHAPE shape = shapes[index];
@@ -199,7 +174,7 @@ int Cube::Down() {
     return 1;
   }
 
-  BackGround *bg = (BackGround*)this->parent;
+  Wall *bg = (Wall*)this->parent;
   for(int line=0; line<this->length; line++) {
 	for(int row=0; row<this->length; row++) {
 	  if(this->data[line][row]) {

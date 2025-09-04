@@ -237,6 +237,33 @@ void Select::next() {
   }
 }
 
+
+BackGround::BackGround(int h, int w, bool fillSpace, Ctrl *parent): Ctrl(parent) {
+  this->height = h;
+  this->width = w;
+  this->fillSpace = fillSpace;
+  for(int i=0; i<MAX_SCREEN; i++) {
+	for(int j=0; j<MAX_SCREEN; j++) {
+	  if(i==0 || j==0 || i==this->height-1 || j == this->width-1) {data[i][j] = 1;}
+      else {this->data[i][j] = 0;}
+	}
+  }
+  srand(time(0));
+}
+
+void BackGround::toShow(int focus) {
+  for(int i=0; i<this->height; i++) {
+    for(int j=0; j<this->width; j++) {
+	  this->setCursor(this->pos.X+j, this->pos.Y+i);
+      if(this->data[i][j]) {	
+        printf("*");
+	  } else if(this->fillSpace) {
+		printf(" ");
+	  }
+	}
+  }
+}
+
 Application::Application(Ctrl *main, int timeDlt) {
   this->main = main;
   this->main->setFocus();

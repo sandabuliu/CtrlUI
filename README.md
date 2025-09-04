@@ -15,7 +15,7 @@
 int main()
 {
     int x=10, y=5;
-    Wall bg(20, 60);
+    BackGround bg(20, 60);
     bg.setPosition(x, y);
 
     Snake snake(11, 8, 3, (Ctrl*)(&bg));
@@ -41,7 +41,7 @@ int main()
 int main()
 {
     int x=40-14/2, y=4;
-    BackGround bg(20, 20);
+    Wall bg(20, 20);
     bg.setPosition(x, y);
 
     Cube cb(MAX_SIZE, (Ctrl*)(&bg));

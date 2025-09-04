@@ -80,6 +80,18 @@ class Select: public Ctrl {
     void next();
 };
 
+#define MAX_SCREEN 500
+
+class BackGround: public Ctrl {
+  public:
+    int height;
+    int width;
+	bool fillSpace;
+	int data[MAX_SCREEN][MAX_SCREEN];
+    BackGround(int h, int w, bool fillSpace=false, Ctrl *parent=NULL);
+	void toShow(int focus);
+};
+
 class Application {
   public:
     Ctrl *main;

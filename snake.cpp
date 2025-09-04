@@ -1,29 +1,6 @@
 #include "snake.h"
 #include<time.h>
 
-Wall::Wall(int h, int w, Ctrl *parent): Ctrl(parent) {
-  this->height = h;
-  this->width = w;
-  for(int i=0; i<MAX_SCREEN; i++) {
-	for(int j=0; j<MAX_SCREEN; j++) {
-	  if(i==0 || j==0 || i==this->height-1 || j == this->width-1) {data[i][j] = 1;}
-      else {this->data[i][j] = 0;}
-	}
-  }
-  srand(time(0));
-}
-
-void Wall::toShow(int focus) {
-  for(int i=0; i<this->height; i++) {
-    for(int j=0; j<this->width; j++) {
-	  this->setCursor(this->pos.X+j, this->pos.Y+i);
-      if(this->data[i][j]) {	
-        printf("*");
-	  }
-	}
-  }
-}
-
 Snake::Snake(int x1, int y1, int length, Ctrl *parent): Ctrl(parent) {
   this->direct = 4;
   for(int i=0;i<length;i++) {
@@ -34,7 +11,7 @@ Snake::Snake(int x1, int y1, int length, Ctrl *parent): Ctrl(parent) {
 }
 
 void Snake::makeFood() {
-  Wall *bg = (Wall*)this->parent;
+  BackGround *bg = (BackGround*)this->parent;
   COORD pos1 = {bg->pos.X, bg->pos.Y};
   COORD pos2 = {bg->pos.X+bg->width, bg->pos.Y+bg->height};
 
@@ -56,7 +33,7 @@ void Snake::makeFood() {
 }
 
 bool Snake::verify() {
-  Wall *bg = (Wall*)this->parent;
+  BackGround *bg = (BackGround*)this->parent;
   COORD pos1 = {bg->pos.X, bg->pos.Y};
   COORD pos2 = {bg->pos.X+bg->width, bg->pos.Y+bg->height};
 
