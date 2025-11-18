@@ -10,32 +10,18 @@ Snake::Snake(int x1, int y1, int length, Ctrl *parent): Ctrl(parent) {
   this->makeFood();
 }
 
-void Snake::makeFood() {
-  BackGround *bg = (BackGround*)this->parent;
-  COORD pos1 = {bg->pos.X, bg->pos.Y};
-  COORD pos2 = {bg->pos.X+bg->width, bg->pos.Y+bg->height};
-
-  bool finish=false;
-  while(!finish) {
-	finish = true;
-    this->food.X = rand() % ((pos2.X-1) - (pos1.X+1) + 1) + pos1.X+1;
-    this->food.Y = rand() % ((pos2.Y-1) - (pos1.Y+1) + 1) + pos1.Y+1;
-	std::vector<COORD>::iterator iter;
-    for(iter=this->pixel.begin();iter!=this->pixel.end();iter++) {
-	  if(food.X == (*iter).X && food.Y == (*iter).Y) {
-	    finish = false;
-	  } 
-	}
+void Snake::toShow(int focus) {
+  std::vector<COORD>::iterator iter;
+  for(iter=this->pixel.begin();iter!=this->pixel.end();iter++) {
+    setCursor((*iter).X, (*iter).Y);
+    printf("*");
   }
-
-  setCursor(this->food.X, this->food.Y);
-  printf("*");
 }
 
 bool Snake::verify() {
   BackGround *bg = (BackGround*)this->parent;
   COORD pos1 = {bg->pos.X, bg->pos.Y};
-  COORD pos2 = {bg->pos.X+bg->width, bg->pos.Y+bg->height};
+  COORD pos2 = {bg->pos.X+bg->width-1, bg->pos.Y+bg->height-1};
 
   COORD cur = this->pixel.back();
   if(cur.X >= pos2.X || cur.X <= pos1.X) {
@@ -45,27 +31,6 @@ bool Snake::verify() {
     return false;
   }
   return true;
-}
-
-bool Snake::canEat() {
-  COORD cur = this->pixel.back();
-  if(cur.X == this->food.X && cur.Y == this->food.Y) {
-    return true;
-  }
-  return false;
-}
-
-void Snake::eat() {
-  COORD *begin = this->pixel.begin();
-  this->pixel.insert(begin, *begin);
-}
-
-void Snake::toShow(int focus) {
-  std::vector<COORD>::iterator iter;
-  for(iter=this->pixel.begin();iter!=this->pixel.end();iter++) {
-    setCursor((*iter).X, (*iter).Y);
-    printf("*");
-  }
 }
 
 int Snake::Up() {
@@ -110,6 +75,41 @@ int Snake::Right() {
   }
   this->direct = 4;
   return 0;
+}
+
+void Snake::makeFood() {
+  BackGround *bg = (BackGround*)this->parent;
+  COORD pos1 = {bg->pos.X, bg->pos.Y};
+  COORD pos2 = {bg->pos.X+bg->width, bg->pos.Y+bg->height};
+
+  bool finish=false;
+  while(!finish) {
+	finish = true;
+    this->food.X = rand() % ((pos2.X-1) - (pos1.X+1) + 1) + pos1.X+1;
+    this->food.Y = rand() % ((pos2.Y-1) - (pos1.Y+1) + 1) + pos1.Y+1;
+	std::vector<COORD>::iterator iter;
+    for(iter=this->pixel.begin();iter!=this->pixel.end();iter++) {
+	  if(food.X == (*iter).X && food.Y == (*iter).Y) {
+	    finish = false;
+	  } 
+	}
+  }
+
+  setCursor(this->food.X, this->food.Y);
+  printf("*");
+}
+
+bool Snake::canEat() {
+  COORD cur = this->pixel.back();
+  if(cur.X == this->food.X && cur.Y == this->food.Y) {
+    return true;
+  }
+  return false;
+}
+
+void Snake::eat() {
+  COORD *begin = this->pixel.begin();
+  this->pixel.insert(begin, *begin);
 }
 
 int Snake::TimeEvent(int timestamp) {
