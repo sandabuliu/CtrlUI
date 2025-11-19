@@ -35,58 +35,58 @@ bool Snake::verify() {
 
 int Snake::Up() {
   if(this->direct == 2) {
-    return 0;
+    return 1;
   }
   if(this->direct == 1) {
 	return this->TimeEvent(clock());
   }
   this->direct = 1;
-  return 0;
+  return 1;
 }
 
 int Snake::Down() {
   if(this->direct == 1) {
-    return 0;
+    return 1;
   }
   if(this->direct == 2) {
 	return this->TimeEvent(clock());
   }
   this->direct = 2;
-  return 0;
+  return 1;
 }
 
 int Snake::Left() {
   if(this->direct == 4) {
-    return 0;
+    return 1;
   }
   if(this->direct == 3) {
 	return this->TimeEvent(clock());
   }
   this->direct = 3;
-  return 0;
+  return 1;
 }
 
 int Snake::Right() {
   if(this->direct == 3) {
-    return 0;
+    return 1;
   }
   if(this->direct == 4) {
 	return this->TimeEvent(clock());
   }
   this->direct = 4;
-  return 0;
+  return 1;
 }
 
 void Snake::makeFood() {
   BackGround *bg = (BackGround*)this->parent;
   COORD pos1 = {bg->pos.X, bg->pos.Y};
-  COORD pos2 = {bg->pos.X+bg->width, bg->pos.Y+bg->height};
+  COORD pos2 = {bg->pos.X+bg->width-1, bg->pos.Y+bg->height-1};
 
   bool finish=false;
   while(!finish) {
 	finish = true;
-    this->food.X = rand() % ((pos2.X-1) - (pos1.X+1) + 1) + pos1.X+1;
-    this->food.Y = rand() % ((pos2.Y-1) - (pos1.Y+1) + 1) + pos1.Y+1;
+    this->food.X = rand() % (pos2.X-pos1.X-1)+pos1.X+1;
+    this->food.Y = rand() % (pos2.Y-pos1.Y-1)+pos1.Y+1;
 	std::vector<COORD>::iterator iter;
     for(iter=this->pixel.begin();iter!=this->pixel.end();iter++) {
 	  if(food.X == (*iter).X && food.Y == (*iter).Y) {
