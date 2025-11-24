@@ -102,7 +102,7 @@ bool Ctrl::isSub(int accessEvent) {
 }
 
 int Ctrl::onEvent(Event &e) {
-  if(!this->focus) {
+  if(!this->focus && e.type!=EVENT_TYPE_TIME) {
 	return 0;
   }
 
