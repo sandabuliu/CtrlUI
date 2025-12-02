@@ -1,18 +1,15 @@
-#include"pinball.h"
+#include"eatbean.h"
+#include<time.h>
 
 int main()
 {
-    int x=10, y=5, height=20, width=60;
-    Scene bg(height, width, false);
+	int x=10, y=5, height=20, width=60;
+    EatbeanBg bg(height, width, true);
     bg.setPosition(x, y);
 
-    Pad pad(6, (Ctrl*)(&bg));
-	pad.setPosition(x+width/2-pad.length/2, y+height-2);
-    pad.subscribe(EVENT_TYPE_KEY | EVENT_TYPE_TIME);
-
-	PinBall ball(&pad, (Ctrl*)(&bg));
-	ball.setPosition(x+width/2, 15);
-	ball.subscribe(EVENT_TYPE_TIME);
+	Ball ball((Ctrl*)(&bg));
+	ball.setPosition(x+1, y+1);
+	ball.subscribe(EVENT_TYPE_KEY);
 
     Application app((Ctrl*)(&bg), 300);
     app.ShowCursor(0);
