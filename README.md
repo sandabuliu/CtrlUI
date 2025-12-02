@@ -19,12 +19,12 @@ int main()
     bg.setPosition(x, y);
 
     Pad pad(6, (Ctrl*)(&bg));
-	  pad.setPosition(x+width/2-pad.length/2, y+height-2);
+    pad.setPosition(x+width/2-pad.length/2, y+height-2);
     pad.subscribe(EVENT_TYPE_KEY | EVENT_TYPE_TIME);
 
-	  PinBall ball(&pad, (Ctrl*)(&bg));
-	  ball.setPosition(x+width/2, 15);
-	  ball.subscribe(EVENT_TYPE_TIME);
+    PinBall ball(&pad, (Ctrl*)(&bg));
+    ball.setPosition(x+width/2, 15);
+    ball.subscribe(EVENT_TYPE_TIME);
 
     Application app((Ctrl*)(&bg), 300);
     app.ShowCursor(0);
@@ -182,3 +182,4 @@ int main()
 ```
 
 Copyright © 2017 [g_tongbin@foxmail.com](mailto:g_tongbin@foxmail.com)
+
