@@ -18,7 +18,7 @@ int main()
 	int x=20, y=0;
     ChessBoard cb(9);
     cb.setPosition(x, y);
-	  cb.subscribe(EVENT_TYPE_KEY);
+    cb.subscribe(EVENT_TYPE_KEY);
 
     Application app((Ctrl*)(&cb), 300);
     app.ShowCursor(0);
@@ -44,9 +44,9 @@ int main()
     EatbeanBg bg(height, width, true);
     bg.setPosition(x, y);
 
-	  Ball ball((Ctrl*)(&bg));
-	  ball.setPosition(x+1, y+1);
-	  ball.subscribe(EVENT_TYPE_KEY);
+    Ball ball((Ctrl*)(&bg));
+    ball.setPosition(x+1, y+1);
+    ball.subscribe(EVENT_TYPE_KEY);
 
     Application app((Ctrl*)(&bg), 300);
     app.ShowCursor(0);
@@ -235,4 +235,5 @@ int main()
 ```
 
 Copyright © 2017 [g_tongbin@foxmail.com](mailto:g_tongbin@foxmail.com)
+
 
