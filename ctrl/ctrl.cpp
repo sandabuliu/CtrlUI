@@ -317,6 +317,7 @@ void Application::Start() {
       this->main->show();
 	}
   }
+  this->main->show();
 }
 
 Application *Ctrl::app = NULL;

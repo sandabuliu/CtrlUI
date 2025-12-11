@@ -1,21 +1,18 @@
-#include"eatbean.h"
+#include"renju.h"
 #include<time.h>
 
 int main()
 {
-	int x=10, y=5, height=20, width=60;
-    EatbeanBg bg(height, width, true);
-    bg.setPosition(x, y);
+	int x=20, y=0;
+    ChessBoard cb(9);
+    cb.setPosition(x, y);
+	cb.subscribe(EVENT_TYPE_KEY);
 
-	Ball ball((Ctrl*)(&bg));
-	ball.setPosition(x+1, y+1);
-	ball.subscribe(EVENT_TYPE_KEY);
-
-    Application app((Ctrl*)(&bg), 300);
+    Application app((Ctrl*)(&cb), 300);
     app.ShowCursor(0);
     app.Start();
 
-    printf("Game Over!\n");
+    printf("WINNER IS [%c]!!!\n", cb.shape[cb.current]);
     Sleep(1000);
     putchar(0);
     return 0;
