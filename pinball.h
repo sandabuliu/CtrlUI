@@ -7,7 +7,6 @@
 class Scene: public BackGround {
   public:
 	Scene(int h, int w, bool fillSpace=false, Ctrl *parent=NULL);
-	bool inRange(int x, int y);
 	void erasePix(int x, int y);
 };
 

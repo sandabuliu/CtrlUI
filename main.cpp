@@ -1,18 +1,29 @@
-#include"renju.h"
+#include"emit.h"
 #include<time.h>
 
 int main()
 {
-	int x=20, y=0;
-    ChessBoard cb(9);
-    cb.setPosition(x, y);
-	cb.subscribe(EVENT_TYPE_KEY);
+    int x=30, y=0;
+    BackGround bg(25, 20);
+    bg.setPosition(x, y);
 
-    Application app((Ctrl*)(&cb), 300);
+    Blocks blocks(&bg);
+    blocks.unsetFocus();
+    blocks.subscribe(EVENT_TYPE_TIME);
+	
+    Player player(&bg);
+    player.setFocus();
+    player.subscribe(EVENT_TYPE_KEY);
+
+    Bullet bullet(&bg);
+    bullet.unsetFocus();
+    bullet.subscribe(EVENT_TYPE_TIME);
+
+    Application app((Ctrl*)(&bg), 20);
     app.ShowCursor(0);
     app.Start();
 
-    printf("WINNER IS [%c]!!!\n", cb.shape[cb.current]);
+    printf("Game Over!\n");
     Sleep(1000);
     putchar(0);
     return 0;

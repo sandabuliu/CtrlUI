@@ -13,11 +13,26 @@ Ctrl::Ctrl(Ctrl *p) {
   this->focus = false;
   this->accessEvent = 0;
   this->isRelease = false;
+
+  char buffer[32];
+  sprintf(buffer, "%d", this);
+  this->name = buffer;
   
   if(p) {
     p->addChild(this);
 	this->setApp(p->app);
   }
+}
+
+Ctrl* Ctrl::getChild(const char* name) {
+  std::vector<Ctrl*>::iterator iter;
+  for(iter=children.begin();iter!=children.end();iter++) {
+	Ctrl *p=*iter;
+	if(p->name.compare(name) == 0) {
+	  return p;
+	}
+  }
+  return NULL;
 }
 
 void Ctrl::release() {
@@ -50,7 +65,6 @@ void Ctrl::hide(bool visible) {
 }
 
 void Ctrl::show(int pFocus) {
-
   if(!this->visible) {
     return;
   }

@@ -8,23 +8,6 @@ Scene::Scene(int h, int w, bool fillSpace, Ctrl *parent): BackGround(h, w, fillS
   }
 }
 
-bool Scene::inRange(int x, int y) {
-  int rx=x-this->pos.X;
-  int ry=y-this->pos.Y;
-  if(rx < 0 || rx > this->width || ry > this->height) {
-    return false;
-  }
-
-  for(int i=0; i<this->height; i++) {
-	for(int j=0; j<this->width; j++) {
-	  if(data[i][j] && rx==j && ry==i && ry!=0) {
-	    return false;
-	  }
-	}
-  }
-  return true;
-}
-
 void Scene::erasePix(int x, int y) {
   if(!this->data[y][x]) {
 	return;

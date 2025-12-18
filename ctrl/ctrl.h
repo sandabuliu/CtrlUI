@@ -19,6 +19,7 @@ class Application;
 
 class Ctrl {
   protected:
+	std::string name;
     Ctrl *parent;
     std::vector<Ctrl*> children;
     bool visible;
@@ -32,6 +33,7 @@ class Ctrl {
     Ctrl(Ctrl *p=NULL);
 	COORD pos;
     std::vector<Ctrl*> getChildren() {return children;}
+	Ctrl* getChild(const char *name);
 	bool getFocus() {return focus;}
 	Ctrl *GetParent() {return parent;}
     void setApp(Application *app);
@@ -80,14 +82,14 @@ class Select: public Ctrl {
     void next();
 };
 
-#define MAX_SCREEN 500
+#define MAX_SCREEN 100
 
 class BackGround: public Ctrl {
   public:
     int height;
     int width;
 	bool fillSpace;
-	int data[MAX_SCREEN][MAX_SCREEN];
+	short data[MAX_SCREEN][MAX_SCREEN];
     BackGround(int h, int w, bool fillSpace=false, Ctrl *parent=NULL);
 	void toShow(int focus);
 };

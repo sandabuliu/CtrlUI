@@ -3,8 +3,6 @@
 
 #include"ctrl/ctrl.h"
 
-#define MAX_SCREEN 500
-
 class Snake: public Ctrl {
   public:
     Snake(int x1, int y1, int length, Ctrl *parent=NULL);
